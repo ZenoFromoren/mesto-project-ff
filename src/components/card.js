@@ -1,6 +1,14 @@
+import { closeModal } from "./modal";
+
 export const deleteCard = evt => evt.target.closest('.card').remove();
 
 export const likeCard = evt => evt.target.classList.toggle('card__like-button_is-active');
+
+export const closePopupByOverlayClick = evt => {
+  if (evt.target.classList.contains('popup')) {
+    closeModal(evt.target);
+  }
+}
 
 export const createCard = (cardTitle, cardImage, deleteCard, likeCard, openTypeImagePopup) => {
   const cardTemplate = document.querySelector('#card-template').content;
@@ -10,7 +18,7 @@ export const createCard = (cardTitle, cardImage, deleteCard, likeCard, openTypeI
   cardLikeButton.addEventListener('click', likeCard);
 
   const popupImage = cardElement.querySelector('.card__image');
-  popupImage.addEventListener('click', openTypeImagePopup);
+  popupImage.addEventListener('click', () => openTypeImagePopup(cardTitle, cardImage));
 
   cardElement.querySelector('.card__title').textContent = cardTitle;
   cardElement.querySelector('.card__image').src = cardImage;

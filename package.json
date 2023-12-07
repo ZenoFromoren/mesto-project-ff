@@ -2,11 +2,7 @@
   "name": "mesto",
   "version": "1.0.0",
   "description": "",
-<<<<<<< HEAD
   "main": "./src/components/index.js",
-=======
-  "main": "index.js",
->>>>>>> 102e4443dd33c8c8bb50b75eefaa6680ff898b3f
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack serve"
