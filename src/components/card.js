@@ -1,14 +1,8 @@
-import { closeModal } from "./modal";
+import { closeModal } from './modal';
 
 export const deleteCard = evt => evt.target.closest('.card').remove();
 
 export const likeCard = evt => evt.target.classList.toggle('card__like-button_is-active');
-
-export const closePopupByOverlayClick = evt => {
-  if (evt.target.classList.contains('popup')) {
-    closeModal(evt.target);
-  }
-}
 
 export const createCard = (cardTitle, cardImage, deleteCard, likeCard, openTypeImagePopup) => {
   const cardTemplate = document.querySelector('#card-template').content;

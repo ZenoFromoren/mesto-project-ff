@@ -1,7 +1,8 @@
 import { initialCards } from './cards';
 import '../pages/index.css';
-import { openModal, closeModal } from './modal.js';
-import { createCard, deleteCard, likeCard, closePopupByOverlayClick } from './card.js';
+import { openModal, closeModal, closePopupByOverlayClick } from './modal.js';
+import { createCard, deleteCard, likeCard } from './card.js';
+import { enableValidation } from './validation.js';
 
 const places = document.querySelector('.places');
 const placesList = places.querySelector('.places__list');
@@ -43,6 +44,7 @@ const handleFormNewPlaceSubmit = evt => {
 
 const openTypeImagePopup = (cardTitle, cardImage) => {
   popupTypeImage.querySelector('.popup__image').src = cardImage;
+  popupTypeImage.querySelector('.popup__image').alt = `Фото ${cardTitle}`;
   popupTypeImage.querySelector('.popup__caption').textContent = cardTitle;
   openModal(popupTypeImage);
 }
@@ -64,5 +66,14 @@ popupCloseButtons.forEach((button) => {
 profileAddButton.addEventListener('click', () => openModal(popupTypeNewCard));
 
 popups.forEach(popup => popup.addEventListener('click', closePopupByOverlayClick));
+
+enableValidation({
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+});
 
 initialCards.forEach(card => placesList.append(createCard(card.name, card.link, deleteCard, likeCard, openTypeImagePopup)));

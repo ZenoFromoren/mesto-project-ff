@@ -10,6 +10,12 @@ const closePopupByEscape = evt => {
   }
 }
 
+export const closePopupByOverlayClick = evt => {
+  if (evt.target.classList.contains('popup')) {
+    closeModal(evt.target);
+  }
+}
+
 export const openModal = popupElement => {
   popupElement.classList.add('popup_is-opened');
   document.addEventListener('keydown', closePopupByEscape);
