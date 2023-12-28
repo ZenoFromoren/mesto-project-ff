@@ -1,10 +1,16 @@
-import { closeModal } from './modal';
+import { APIconfig } from './api.js';
 
-export const deleteCard = evt => evt.target.closest('.card').remove();
+export const deleteCard = (evt, cardId) => {
+  fetch(`${APIconfig.baseUrl}/cards/${cardId}`, {
+    method: 'DELETE',
+    headers: APIconfig.headers
+  })
+  evt.target.closest('.card').remove();
+} 
 
 export const likeCard = evt => evt.target.classList.toggle('card__like-button_is-active');
 
-export const createCard = (cardTitle, cardImage, deleteCard, likeCard, openTypeImagePopup) => {
+export const createCard = (cardTitle, cardImage, deleteCard, likeCard, openTypeImagePopup, cardElement, profileData) => {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
 
@@ -19,7 +25,12 @@ export const createCard = (cardTitle, cardImage, deleteCard, likeCard, openTypeI
   cardElement.querySelector('.card__image').alt = `Фото ${cardTitle}`;
 
   const cardDeleteButton = cardElement.querySelector('.card__delete-button');
-  cardDeleteButton.addEventListener('click', deleteCard);
+
+  if (cardElement.owner['_id'] !== profileData._id) {
+    cardDeleteButton.remove();
+  }
+
+  cardDeleteButton.addEventListener('click', (evt) => deleteCard(evt, cardElement['_id']));
 
   return cardElement;
 }
