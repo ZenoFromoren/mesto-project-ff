@@ -53,7 +53,7 @@ const setEventListeners = (formElement, Validationconfig) => {
       toggleButtonState(formElement.checkValidity(), buttonElement, Validationconfig);
     });
   });
-};
+}
 
 export const clearValidation = (formElement, config) => {
   const formSubmitButton = formElement.querySelector(config.submitButtonSelector);
@@ -65,4 +65,4 @@ export const clearValidation = (formElement, config) => {
 export const enableValidation = config => {
   const formList = [...document.querySelectorAll(config.formSelector)];
   formList.forEach(formElement => setEventListeners(formElement, config));
-};
+}

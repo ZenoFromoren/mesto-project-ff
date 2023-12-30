@@ -8,6 +8,7 @@ export const APIconfig = {
 
 export const getInitialCards = () => {
   return fetch(`${APIconfig.baseUrl}/cards`, {
+    method: 'GET',
     headers: APIconfig.headers})
     .then(res => {
       if (res.ok) {

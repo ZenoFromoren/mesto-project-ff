@@ -6,7 +6,7 @@ const closePopupByEscape = evt => {
       if (popup.classList.contains('popup_is-opened')) {
         closeModal(popup);
       }
-    });
+    })
   }
 }
 
@@ -24,4 +24,5 @@ export const openModal = popupElement => {
 export const closeModal = popupElement => {
   popupElement.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', closePopupByEscape);
+  popupElement.querySelector('.popup__form').reset()
 }

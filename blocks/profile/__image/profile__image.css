@@ -1,4 +1,6 @@
 .profile__image {
+  display: flex;
+  position: relative;
   width: 120px;
   height: 120px;
   -webkit-border-radius: 50%;
@@ -7,6 +9,24 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+}
+
+.profile__image::after {
+  content: '';
+  position: absolute;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.profile__image:hover::after {
+  background-image: url('../../../src/images/edit-icon.svg');
+  background-color: #00000080;
+  background-position: center;
+  background-size: 22%;
+  background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 740px) {
