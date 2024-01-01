@@ -1,8 +1,8 @@
 import '../pages/index.css';
 import { openModal, closeModal, closePopupByOverlayClick } from './modal.js';
-import { createCard, deleteCard, likeCard } from './card.js';
+import { createCard, handleDeleteCard, likeCard } from './card.js';
 import { enableValidation, clearValidation } from './validation.js';
-import { getInitialCards, APIconfig } from './api.js';
+import { getInitialCards, getProfileData, changeProfileData, addNewPlace, changeAvatar } from './api.js';
 
 const places = document.querySelector('.places');
 const placesList = places.querySelector('.places__list');
@@ -26,7 +26,6 @@ const popupTypeEdit = document.querySelector('.popup_type_edit');
 const popupTypeNewCard = document.querySelector('.popup_type_new-card');
 const popupTypeImage = document.querySelector('.popup_type_image');
 const popupUpdateAvatar = document.querySelector('.popup_update_avatar');
-export const popupDeleteCard = document.querySelector('.popup_delete_card');
 
 const profileEditButton = document.querySelector('.profile__edit-button');
 
@@ -36,15 +35,7 @@ const profileAddButton = document.querySelector('.profile__add-button');
 
 const cardData = getInitialCards();
 
-export const profileData = fetch(`${APIconfig.baseUrl}/users/me`, {
-  headers: APIconfig.headers
-})
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  })
+export const profileData = getProfileData();
 
 const setprofileData = profileData => {
   profileTitle.textContent = profileData.name;
@@ -55,81 +46,41 @@ const setprofileData = profileData => {
 const handleFormProfileEditSubmit = evt => {
   evt.preventDefault();
   popupTypeEdit.querySelector('.button').textContent = 'Сохранение...';
-  fetch(`${APIconfig.baseUrl}/users/me`, {
-    method: 'PATCH',
-    headers: APIconfig.headers,
-    body: JSON.stringify({
-      name: nameInput.value,
-      about: jobInput.value
-    })
-  })
-    .then(res => {
-      if (res.ok) {
-        return res.json(); 
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+  changeProfileData(nameInput.value, jobInput.value)
     .then(profileData => {
       setprofileData(profileData);
       popupTypeEdit.querySelector('.button').textContent = 'Сохранить';
+      closeModal(popupTypeEdit);
     })
     .catch(err => console.log(err))
-  
-  closeModal(popupTypeEdit);
 }
 
 const handleFormNewPlaceSubmit = evt => {
   evt.preventDefault();
   newPlaceForm.querySelector('.button').textContent = 'Сохранение...';
-  const newCardData = fetch(`${APIconfig.baseUrl}/cards`, {
-    method: 'POST',
-    headers: APIconfig.headers,
-    body: JSON.stringify({
-      name: placeInput.value,
-      link: linkInput.value
-    })
-  })
-  .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+  const newCardData = addNewPlace(placeInput.value, linkInput.value)
 
-    Promise.all([profileData, newCardData])
-      .then(([profileData, newCardData]) => {
-        placesList.prepend(createCard(newCardData.name, newCardData.link, deleteCard, likeCard, openTypeImagePopup, newCardData, profileData));
-        newPlaceForm.querySelector('.button').textContent = 'Сохранить';
-      })
-
-  newPlaceForm.reset();
-  closeModal(popupTypeNewCard);
+  Promise.all([profileData, newCardData])
+    .then(([profileData, newCardData]) => {
+      placesList.prepend(createCard(newCardData.name, newCardData.link, handleDeleteCard, likeCard, openTypeImagePopup, newCardData, profileData));
+      newPlaceForm.querySelector('.button').textContent = 'Сохранить';
+      newPlaceForm.reset();
+      closeModal(popupTypeNewCard);
+    })
+    .catch(err => console.log(err));
 }
 
 const handleFormUpdateAvatarSubmit = evt => {
   evt.preventDefault();
   updateAvatarForm.querySelector('.button').textContent = 'Сохранение...';
-  fetch(`${APIconfig.baseUrl}/users/me/avatar`, {
-    method: 'PATCH',
-    headers: APIconfig.headers,
-    body: JSON.stringify({
-      avatar: avatarLinkInput.value
-    })
-  })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+  changeAvatar(avatarLinkInput.value)
     .then(profileData => {
       profileImage.style.backgroundImage = `url(${profileData.avatar})`;
       updateAvatarForm.querySelector('.button').textContent = 'Сохранить';
+      updateAvatarForm.reset();
+      closeModal(popupUpdateAvatar);
     })
     .catch(err => console.log(err));
-
-  updateAvatarForm.reset();
-  closeModal(popupUpdateAvatar);
 }
 
 const openTypeImagePopup = (cardTitle, cardImage) => {
@@ -199,8 +150,6 @@ enableValidation({
 Promise.all([profileData, cardData])
   .then(([profileData, cardData]) => {
     setprofileData(profileData);
-    cardData.forEach(cardElement => placesList.append(createCard(cardElement.name, cardElement.link, deleteCard, likeCard, openTypeImagePopup, cardElement, profileData)));
+    cardData.forEach(cardElement => placesList.append(createCard(cardElement.name, cardElement.link, handleDeleteCard, likeCard, openTypeImagePopup, cardElement, profileData)));
   })
-  .catch(err => {
-    console.log(err);
-  })
+  .catch(err => console.log(err))

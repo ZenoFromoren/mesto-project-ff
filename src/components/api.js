@@ -6,10 +6,12 @@ export const APIconfig = {
   }
 }
 
-export const getInitialCards = () => {
-  return fetch(`${APIconfig.baseUrl}/cards`, {
-    method: 'GET',
-    headers: APIconfig.headers})
+export const request = (endpoint, options = {}) => {
+  return fetch(`${APIconfig.baseUrl}/${endpoint}`, {
+    method: "GET",
+    headers: APIconfig.headers,
+    ...options,
+  }) 
     .then(res => {
       if (res.ok) {
         return res.json();
@@ -17,3 +19,44 @@ export const getInitialCards = () => {
       return Promise.reject(`Ошибка: ${res.status}`);
     })
 }
+
+export const getInitialCards = () => request('cards');
+
+export const getProfileData = () => request('users/me');
+
+export const changeProfileData = (name, about) => request('users/me', {
+  method: 'PATCH',
+  body: JSON.stringify({
+    name,
+    about
+  })
+})
+
+export const addNewPlace = (name, link) => request('cards', {
+  method: 'POST',
+  body: JSON.stringify({
+    name,
+    link
+  })
+})
+
+export const changeAvatar = avatar => request('users/me/avatar', {
+  method: 'PATCH',
+  body: JSON.stringify({
+    avatar
+  })
+})
+
+export const deleteCard = cardId => request(`cards/${cardId}`, {
+  method: 'DELETE'
+})
+
+export const setLike = (cardId, profileData) => request(`cards/likes/${cardId}`, {
+  method: 'PUT',
+  body: JSON.stringify(profileData)
+})
+
+export const removeLike = (cardId, profileData) => request(`cards/likes/${cardId}`, {
+  method: 'DELETE',
+  body: JSON.stringify(profileData)
+})

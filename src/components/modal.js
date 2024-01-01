@@ -24,5 +24,7 @@ export const openModal = popupElement => {
 export const closeModal = popupElement => {
   popupElement.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', closePopupByEscape);
-  popupElement.querySelector('.popup__form').reset()
+  if (!popupElement.classList.contains('popup_type_image')) {
+    popupElement.querySelector('.popup__form').reset();
+  }
 }

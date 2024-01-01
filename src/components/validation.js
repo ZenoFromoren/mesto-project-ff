@@ -29,19 +29,9 @@ const checkInputValidity = (formElement, inputElement, Validationconfig) => {
   const isInputValid = inputElement.validity.valid;
   const isPatternMismatch = inputElement.validity.patternMismatch;
 
-  if (isPatternMismatch) {
-    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-  }
-  else {
-    inputElement.setCustomValidity('');
-  }
+  isPatternMismatch ? inputElement.setCustomValidity(inputElement.dataset.errorMessage) : inputElement.setCustomValidity('');
 
-  if (!isInputValid) {
-    showInputError(formElement, inputElement, Validationconfig);
-  }
-  else {
-    hideInputError(formElement, inputElement, Validationconfig);
-  }
+  !isInputValid ? showInputError(formElement, inputElement, Validationconfig) : hideInputError(formElement, inputElement, Validationconfig);
 }
 
 const setEventListeners = (formElement, Validationconfig) => {
