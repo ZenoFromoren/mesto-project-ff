@@ -1,4 +1,3 @@
-import { profileData } from './index.js';
 import { deleteCard, setLike, removeLike } from './api.js';
 
 export const handleDeleteCard = (evt, cardId) => {
@@ -8,30 +7,22 @@ export const handleDeleteCard = (evt, cardId) => {
 } 
 
 export const likeCard = (evt, cardId) => {
-  if (evt.target.classList.contains('card__like-button_is-active')) {
-    removeLike(cardId, profileData)
-      .then(res => {
-        evt.target.closest('.card').querySelector('.card__numberOfLikes').textContent = res.likes.length;
-        evt.target.classList.toggle('card__like-button_is-active');
-      })
-      .catch(err => console.log(err)); 
-  }
-  else {
-    setLike(cardId, profileData)
-      .then(res => {
-        evt.target.closest('.card').querySelector('.card__numberOfLikes').textContent = res.likes.length;
-        evt.target.classList.toggle('card__like-button_is-active');
-      })
-      .catch(err => console.log(err));
-  }
+  const likeMethod = evt.target.classList.contains('card__like-button_is-active') ? removeLike : setLike;
+  likeMethod(cardId) 
+    .then(res => { 
+      evt.target.closest('.card').querySelector('.card__numberOfLikes').textContent = res.likes.length; 
+      evt.target.classList.toggle('card__like-button_is-active'); 
+      evt.target.classList.contains('card__like-button_is-active') ? evt.target.ariaLabel = 'Убрать лайк карточке' : evt.target.ariaLabel = 'Поставить лайк карточке';
+     }) 
+    .catch(err => console.log(err));
 }
 
-export const createCard = (cardTitle, cardImage, handleDeleteCard, likeCard, openTypeImagePopup, card, profileData) => {
+export const createCard = (cardTitle, cardImage, handleDeleteCard, likeCard, openTypeImagePopup, cardId, cardOwnerId, cardLikes, profileId) => {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
 
   const cardLikeButton = cardElement.querySelector('.card__like-button');
-  const cardIsLiked = card.likes.some(profile => profileData['_id'] === profile['_id'])
+  const cardIsLiked = cardLikes.some(profile => profileId === profile['_id'])
   const cardNumberOfLikes = cardElement.querySelector('.card__numberOfLikes');
   const cardDeleteButton = cardElement.querySelector('.card__delete-button');
 
@@ -40,19 +31,16 @@ export const createCard = (cardTitle, cardImage, handleDeleteCard, likeCard, ope
   cardElement.querySelector('.card__title').textContent = cardTitle;
   popupImage.src = cardImage;
   popupImage.alt = `Фото ${cardTitle}`;
-  cardNumberOfLikes.textContent = card.likes.length;
+  cardNumberOfLikes.textContent = cardLikes.length;
 
-  cardLikeButton.addEventListener('click', evt => likeCard(evt, card['_id']));
+  cardLikeButton.addEventListener('click', evt => likeCard(evt, cardId));
   
   popupImage.addEventListener('click', () => openTypeImagePopup(cardTitle, cardImage));
 
-  if (card.owner['_id'] !== profileData._id) {
-    cardDeleteButton.remove();
-  }
+  cardOwnerId !== profileId ? cardDeleteButton.remove() : cardDeleteButton.addEventListener('click', evt => handleDeleteCard(evt, cardId));
 
   cardIsLiked ? cardLikeButton.classList.add('card__like-button_is-active') : cardLikeButton.classList.remove('card__like-button_is-active');
-
-  cardDeleteButton.addEventListener('click', evt => handleDeleteCard(evt, card['_id']));
+  cardLikeButton.classList.contains('card__like-button_is-active') ? cardLikeButton.ariaLabel = 'Убрать лайк карточке' : cardLikeButton.ariaLabel = 'Поставить лайк карточке';
 
   return cardElement;
 }

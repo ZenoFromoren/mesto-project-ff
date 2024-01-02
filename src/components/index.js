@@ -33,9 +33,18 @@ const popupCloseButtons = document.querySelectorAll('.popup__close');
 
 const profileAddButton = document.querySelector('.profile__add-button');
 
-const cardData = getInitialCards();
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}
 
-export const profileData = getProfileData();
+const cardDataPromise = getInitialCards();
+
+const profileDataPromise = getProfileData();
 
 const setprofileData = profileData => {
   profileTitle.textContent = profileData.name;
@@ -49,25 +58,24 @@ const handleFormProfileEditSubmit = evt => {
   changeProfileData(nameInput.value, jobInput.value)
     .then(profileData => {
       setprofileData(profileData);
-      popupTypeEdit.querySelector('.button').textContent = 'Сохранить';
       closeModal(popupTypeEdit);
     })
     .catch(err => console.log(err))
+    .finally(() => profileEditForm.querySelector('.button').textContent = 'Сохранить')
 }
 
 const handleFormNewPlaceSubmit = evt => {
   evt.preventDefault();
   newPlaceForm.querySelector('.button').textContent = 'Сохранение...';
-  const newCardData = addNewPlace(placeInput.value, linkInput.value)
-
-  Promise.all([profileData, newCardData])
-    .then(([profileData, newCardData]) => {
-      placesList.prepend(createCard(newCardData.name, newCardData.link, handleDeleteCard, likeCard, openTypeImagePopup, newCardData, profileData));
-      newPlaceForm.querySelector('.button').textContent = 'Сохранить';
+  addNewPlace(placeInput.value, linkInput.value)
+    .then(newCardData => {
+      placesList.prepend(createCard(newCardData.name, newCardData.link, handleDeleteCard, likeCard, openTypeImagePopup, newCardData['_id'], newCardData.owner['_id'], newCardData.likes, profileId));
       newPlaceForm.reset();
       closeModal(popupTypeNewCard);
     })
-    .catch(err => console.log(err));
+    .then()
+    .catch(err => console.log(err))
+    .finally(() => newPlaceForm.querySelector('.button').textContent = 'Сохранить')
 }
 
 const handleFormUpdateAvatarSubmit = evt => {
@@ -76,11 +84,11 @@ const handleFormUpdateAvatarSubmit = evt => {
   changeAvatar(avatarLinkInput.value)
     .then(profileData => {
       profileImage.style.backgroundImage = `url(${profileData.avatar})`;
-      updateAvatarForm.querySelector('.button').textContent = 'Сохранить';
       updateAvatarForm.reset();
       closeModal(popupUpdateAvatar);
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err))
+    .finally(() => updateAvatarForm.querySelector('.button').textContent = 'Сохранить')
 }
 
 const openTypeImagePopup = (cardTitle, cardImage) => {
@@ -97,14 +105,7 @@ newPlaceForm.addEventListener('submit', handleFormNewPlaceSubmit);
 updateAvatarForm.addEventListener('submit', handleFormUpdateAvatarSubmit);
 
 profileEditButton.addEventListener('click', () => {
-  clearValidation(profileEditForm, {
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__error_visible'
-  });
+  clearValidation(profileEditForm, validationConfig);
   openModal(popupTypeEdit);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
@@ -113,43 +114,27 @@ profileEditButton.addEventListener('click', () => {
 popupCloseButtons.forEach(button => button.addEventListener('click', evt => closeModal(evt.target.closest('.popup'))));
 
 profileAddButton.addEventListener('click', () => {
-  clearValidation(newPlaceForm, {
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__error_visible'
-  });
+  newPlaceForm.reset();
+  clearValidation(newPlaceForm, validationConfig);
   openModal(popupTypeNewCard);
 })
 
 popups.forEach(popup => popup.addEventListener('click', closePopupByOverlayClick));
 
 profileImage.addEventListener('click', () => {
-  clearValidation(updateAvatarForm, {
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__error_visible'
-  })
+  updateAvatarForm.reset();
+  clearValidation(updateAvatarForm, validationConfig)
   openModal(popupUpdateAvatar);
 })
 
-enableValidation({
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
-})
+enableValidation(validationConfig)
 
-Promise.all([profileData, cardData])
+let profileId
+
+Promise.all([profileDataPromise, cardDataPromise])
   .then(([profileData, cardData]) => {
+    profileId = profileData['_id'];
     setprofileData(profileData);
-    cardData.forEach(cardElement => placesList.append(createCard(cardElement.name, cardElement.link, handleDeleteCard, likeCard, openTypeImagePopup, cardElement, profileData)));
+    cardData.forEach(cardElement => placesList.append(createCard(cardElement.name, cardElement.link, handleDeleteCard, likeCard, openTypeImagePopup, cardElement['_id'], cardElement.owner['_id'], cardElement.likes, profileId)));
   })
   .catch(err => console.log(err))

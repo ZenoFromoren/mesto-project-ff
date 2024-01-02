@@ -14,13 +14,13 @@
   </header>
   <main class="content">
     <section class="profile page__section">
-      <div class="profile__image"></div>
+      <div class="profile__image" aria-label="Обновить аватар"></div>
       <div class="profile__info">
         <h1 class="profile__title"></h1>
-        <button class="profile__edit-button" type="button"></button>
+        <button class="profile__edit-button" aria-label="Редактировать профиль" type="button"></button>
         <p class="profile__description"></p>
       </div>
-      <button class="profile__add-button" type="button"></button>
+      <button class="profile__add-button" aria-label="Добавить новое место" type="button"></button>
     </section>
     <section class="places page__section">
       <ul class="places__list">
@@ -34,7 +34,7 @@
   </footer>
   <div class="popup popup_type_edit popup_is-animated">
     <div class="popup__content">
-      <button type="button" class="popup__close"></button>
+      <button type="button" class="popup__close" aria-label="Закрыть окно редактирования профиля"></button>
       <h3 class="popup__title">Редактировать профиль</h3>
       <form class="popup__form" name="edit-profile">
         <label class="form__field">
@@ -51,7 +51,7 @@
   </div>
   <div class="popup popup_type_new-card popup_is-animated">
     <div class="popup__content">
-      <button type="button" class="popup__close"></button>
+      <button type="button" class="popup__close" aria-label="Закрыть окно создания нового места"></button>
       <h3 class="popup__title">Новое место</h3>
       <form class="popup__form" name="new-place">
         <label class="form__field">
@@ -68,7 +68,7 @@
   </div>
   <div class="popup popup_update_avatar popup_is-animated">
     <div class="popup__content">
-      <button type="button" class="popup__close"></button>
+      <button type="button" class="popup__close" aria-label="Закрыть окно редактирования аватара"></button>
       <h3 class="popup__title">Обновить аватар</h3>
       <form class="popup__form" name="update-avatar">
         <label class="form__field">
@@ -81,19 +81,17 @@
   </div>
   <div class="popup popup_type_image popup_is-animated">
     <div class="popup__content popup__content_content_image">
-      <button type="button" class="popup__close"></button>
+      <button type="button" class="popup__close" aria-label="Закрыть изображение карточки"></button>
       <img src="" alt="" class="popup__image">
       <p class="popup__caption"></p>
     </div>
   </div>
 </div>
-<script src="./scripts/cards.js"></script>
-<script src="./scripts/index.js" defer></script>
 
 <template id="card-template">
   <li class="places__item card">
     <img class="card__image" src="" alt="" />
-    <button type="button" class="card__delete-button"></button>
+    <button type="button" class="card__delete-button" aria-label="Удалить карточку"></button>
     <div class="card__description">
       <h2 class="card__title">
       </h2>

@@ -51,12 +51,10 @@ export const deleteCard = cardId => request(`cards/${cardId}`, {
   method: 'DELETE'
 })
 
-export const setLike = (cardId, profileData) => request(`cards/likes/${cardId}`, {
-  method: 'PUT',
-  body: JSON.stringify(profileData)
+export const setLike = cardId => request(`cards/likes/${cardId}`, {
+  method: 'PUT'
 })
 
-export const removeLike = (cardId, profileData) => request(`cards/likes/${cardId}`, {
-  method: 'DELETE',
-  body: JSON.stringify(profileData)
+export const removeLike = cardId => request(`cards/likes/${cardId}`, {
+  method: 'DELETE'
 })
